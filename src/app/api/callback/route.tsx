@@ -46,8 +46,8 @@ export async function GET(req: NextRequest) {
     const youtubeService = google.youtube('v3');
     const youtubeApiResponse = await youtubeService.channels.list({
       auth: oauth2Client,
-      part: 'snippet,contentDetails,statistics',
-      forUsername: 'GoogleDevelopers',
+      part: ['snippet', 'contentDetails', 'statistics'],
+      forUsername: ['GoogleDevelopers'], // Ensuring forUsername is an array
     });
 
     const channels = youtubeApiResponse.data.items;
