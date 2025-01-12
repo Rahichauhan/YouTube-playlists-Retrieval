@@ -1,17 +1,9 @@
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
 
-interface OAuthTokens {
-  access_token: string;
-  refresh_token?: string;
-  scope: string;
-  token_type: string;
-  expiry_date: number;
-}
+let userCredential;
 
-let userCredential: OAuthTokens | undefined;
-
-export async function GET(req: NextRequest) {
+export async function GET(req) {
   const oauth2Client = new google.auth.OAuth2(
     process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
     process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET,
@@ -40,15 +32,15 @@ export async function GET(req: NextRequest) {
     const tokens = tokenResponse.tokens;
     oauth2Client.setCredentials(tokens);
 
-    userCredential = tokens as OAuthTokens;
+    userCredential = tokens;
 
-    // Use YouTube API to fetch channel details
     const youtubeService = google.youtube('v3');
     const youtubeApiResponse = await youtubeService.channels.list({
       auth: oauth2Client,
-      part: ['snippet', 'contentDetails', 'statistics'],
-      forUsername: ['GoogleDevelopers'], // Ensuring forUsername is an array
+      part: 'snippet',
+      forUsername: ['GoogleDevelopers'], // Cast as an array of strings
     });
+    
 
     const channels = youtubeApiResponse.data.items;
 
